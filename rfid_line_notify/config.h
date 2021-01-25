@@ -62,8 +62,8 @@ SoftwareSerial SoftSerial(8, 9);     // RX:8 TX:9
 // MQTT Setting
 #define MQTT_BROKER "io.adafruit.com"
 #define MQTT_PORT 1883
-#define MQTT_USERNAME "Zack_Huang"
-#define MQTT_PASSWORD "aio_Ftia12QNu6FJi1KCA3hr4St5ODNU"
+#define MQTT_USERNAME "<YOUR USERNAME>"
+#define MQTT_PASSWORD "<YOUR AIO KEY>"
 #define MQTT_TOPIC_MSG MQTT_USERNAME "/feeds/rfid-message.message"
 
 #define RST_PIN 6

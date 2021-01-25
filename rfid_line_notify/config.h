@@ -70,5 +70,7 @@ SoftwareSerial SoftSerial(8, 9);     // RX:8 TX:9
 #define SS_PIN  10
 
 #define NUM_OF_CARD 3
+#define RED_LED_PIN 5
+#define GREEN_LED_PIN 4
 
 #endif /* _CONFIG_H */

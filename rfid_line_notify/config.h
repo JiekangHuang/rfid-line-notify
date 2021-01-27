@@ -73,4 +73,9 @@ SoftwareSerial SoftSerial(8, 9);     // RX:8 TX:9
 #define RED_LED_PIN 5
 #define GREEN_LED_PIN 4
 
+typedef struct {
+    const uint8_t UID[4];
+    const char *name;
+} user_info_t;
+
 #endif /* _CONFIG_H */

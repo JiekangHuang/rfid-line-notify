@@ -7,14 +7,14 @@
 
 MFRC522 mfrc522;
 
-// 設定有效 RFID Card UID
-const uint8_t valid_cards[NUM_OF_CARD][4] = {
+// 設定有效 RFID Card UID、name
+const user_info_t users[NUM_OF_CARD] = {
     // card 1
-    {0xF2, 0xB8, 0x15, 0x5F},
+    { .UID = {0xF2, 0xB8, 0x15, 0x5F}, .name = "card 1" },
     // card 2
-    {0x34, 0x25, 0x71, 0xA7},
+    { .UID = {0x34, 0x25, 0x71, 0xA7}, .name = "card 2" },
     // my phone(NFC)
-    {0x30, 0xA8, 0x11, 0x10}
+    { .UID = {0x30, 0xA8, 0x11, 0x10}, .name = "my phone" },
 };
 
 #ifdef DEBUG_DUMP_AT_COMMAND
@@ -34,7 +34,7 @@ PubSubClient mqttClient(MQTT_BROKER, MQTT_PORT, tcpClient);
 void mqttConnect(void);
 void nbConnect(void);
 String UIDToHexString(uint8_t *buffer);
-bool chkCardUID(uint8_t *UID);
+const user_info_t *getCardInfo(uint8_t *UID);
 void lock(void);
 void unlock(void);
 
@@ -76,12 +76,15 @@ void loop()
 
     // read card
     if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
-        // get card uid
         uint8_t *uid = mfrc522.uid.uidByte;
-        if (chkCardUID(uid)) {
+        // get card info
+        const user_info_t *user = getCardInfo(uid);
+        if (user != NULL) {
             // send success message to adafruit io
-            mqttClient.publish(MQTT_TOPIC_MSG, "歡迎回家 ！");
-            SerialMon.println("Valid card");
+            char buff[30];
+            sprintf(buff, "歡迎 %s 回家！", user->name);
+            mqttClient.publish(MQTT_TOPIC_MSG, buff);
+            SerialMon.println(buff);
             // unlock
             unlock();
             delay(5000);
@@ -89,7 +92,7 @@ void loop()
             // send fail message to adafruit io
             String msg = "解鎖失敗 ！ UID: " + UIDToHexString(uid);
             mqttClient.publish(MQTT_TOPIC_MSG, msg.c_str());
-            SerialMon.println("Invalid card");
+            SerialMon.println(msg);
         }
         // lock
         lock();
@@ -150,24 +153,24 @@ String UIDToHexString(uint8_t *UID)
 }
 
 /**
- * 檢查 UID 是否在有效清單內
+ * 根據 UID 回傳 user info 指標，若未找到則回傳 NULL
  * @param UID UID 指標
- * @return 是否有效
+ * @return user info 指標
  */
-bool chkCardUID(uint8_t *UID) 
+const user_info_t *getCardInfo(uint8_t *UID) 
 {
     for (int ii = 0; ii < NUM_OF_CARD; ii++) {
         int jj;
         for (jj = 0; jj < 4; jj++) {
-            if (*(UID + jj) != valid_cards[ii][jj]) {
+            if (*(UID + jj) != users[ii].UID[jj]) {
                 break;
             }
         }
         if (jj == 4) {
-            return true;
+            return (users + ii);
         }
     }
-    return false;
+    return NULL;
 }
 
 /**

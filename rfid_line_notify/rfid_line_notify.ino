@@ -9,12 +9,12 @@ MFRC522 mfrc522;
 
 // 設定有效 RFID Card UID、name
 const user_info_t users[NUM_OF_CARD] = {
-    // card 1
-    { .UID = {0xF2, 0xB8, 0x15, 0x5F}, .name = "card 1" },
-    // card 2
-    { .UID = {0x34, 0x25, 0x71, 0xA7}, .name = "card 2" },
-    // my phone(NFC)
-    { .UID = {0x30, 0xA8, 0x11, 0x10}, .name = "my phone" },
+    // 小夫
+    { .UID = {0xF2, 0xB8, 0x15, 0x5F}, .name = "小夫" },
+    // 胖虎
+    { .UID = {0x34, 0x25, 0x71, 0xA7}, .name = "胖虎" },
+    // 大雄
+    { .UID = {0x30, 0xA8, 0x11, 0x10}, .name = "大雄" },
 };
 
 #ifdef DEBUG_DUMP_AT_COMMAND
